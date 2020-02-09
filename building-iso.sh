@@ -9,6 +9,8 @@ chmod -R u+w /mnt/iso
 cp /path/to/someks.cfg /tmp/dvd/isolinux/ks.cfg
 cp /path/to/*.rpm /tmp/dvd/Packages/.
 cd /tmp/dvd/Packages && createrepo -dpo .. .
+# delete repodata folder if exists previously
+
 
 #Modifying boot list
 vim /tmp/dvd/isolinux/isolinux.cfg  #Updating the file with...
