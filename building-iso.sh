@@ -10,6 +10,7 @@ cp /path/to/someks.cfg /tmp/dvd/isolinux/ks.cfg
 #---- This lines damage the groups
 cp /path/to/*.rpm /tmp/dvd/Packages/.
 cd /tmp/dvd/Packages && createrepo -dpo .. .
+# createrepo --update -o .. .     -> Updating repo database
 # delete repodata folder if exists previously
 
 
