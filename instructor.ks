@@ -115,13 +115,13 @@ echo "Copy RHEL DVD to local drive..." | tee /dev/tty8
 cp /run/install/isodir/centos/isos/* /mnt/sysimage/var/www/html/
 echo "/var/www/html/CentOS-7-x86_64-DVD-1908.iso /mnt/cdrom iso9660 loop,ro 0 0" >> /mnt/sysimage/etc/fstab
 mkdir /mnt/sysimage/var/lib/libvirt/images/devops
-cp -r /run/install/isodir/centos/images/ /mnt/sysimage/var/lib/libvirt/images/devops
+cp -r /run/install/isodir/centos/images/ /run/install/isodir/ubuntu/vms/bionic-server-cloudimg-amd64.img /mnt/sysimage/var/lib/libvirt/images/devops
 xz --decompress /mnt/sysimage/var/lib/libvirt/images/devops/images/CentOS-7-x86_64-GenericCloud.qcow2.xz 
 #qemu-img resize /mnt/sysimage/var/lib/libvirt/images/devops/images/CentOS-7-x86_64-GenericCloud.qcow2 40G
-cp /run/install/isodir/bsupport* /mnt/sysimage/usr/bin/
-chmod a+x /mnt/sysimage/usr/bin/bsupport*
+cp /run/install/isodir/bsupport-* /mnt/sysimage/usr/bin/
+chmod a+x /mnt/sysimage/usr/bin/bsupport-*
 cp /run/install/isodir/slides/day* /mnt/sysimage/home/devops/Pictures/
-
+cp /run/install/isodir/bsupportvm* /mnt/sysimage/etc/bash_completion.d/
 chgrp qemu /mnt/sysimage/var/lib/libvirt/images/devops/ -R
 chmod g+w -R /var/lib/libvirt/images/devops/
 # Changing wallpapers per day
