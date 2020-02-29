@@ -41,3 +41,14 @@ isohybrid /tmp/boot.iso
 
 #Add an MD5 checksum (to allow testing of media). 
 implantisomd5 /tmp/boot.iso
+
+# Current version
+mkisofs -o /tmp/devops7.iso -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -V "CentOS 7 x86_64" -R -J -l -joliet-long -allow-limited-siz -iso-level 3 -v -T  .
+ll /mnt/iso
+drwxr-xrwx. 6 root root  120 Feb 26 22:11 boot
+-rwxr-xr-x. 1 root root 5088 Feb 29 15:49 bsupport-devops-vm
+-rw-r--r--. 1 root root 1069 Feb 29 13:57 bsupportvm.bash
+drwxrwxrwx. 4 root root   32 Feb 27 14:41 centos
+drwxr-xr-x. 4 root root   38 Feb 27 09:38 repositories
+drwxr-xr-x. 2 root root   22 Feb 28 20:12 slides
+drwxr-xr-x. 3 root root   17 Feb 28 20:26 ubuntu
