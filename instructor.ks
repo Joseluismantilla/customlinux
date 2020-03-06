@@ -101,31 +101,30 @@ echo "192.168.122.14 registry registry.example.local" >> /etc/hosts
 %post --nochroot --log=/mnt/sysimage/root/ks-post.log
 df -h |tee -a /mnt/sysimage/root/ks-post.log
 cat > /mnt/sysimage/tmp/centos-course <<-EOF 
-REPO_COURSE=/mnt/sysimage/var/www/html/repo/materials
+REPO_COURSE=/var/www/html/repo/materials
+REPO_ISO=/var/www/html/iso
 DATE_INSTALLATION=$(date +%F)
 centosiso=CentOS-7-x86_64-DVD-1908.iso
 EOF
 
 source /mnt/sysimage/tmp/centos-course
-mkdir -p ${REPO_COURSE} /mnt/sysimage/mnt/cdrom 
+mkdir -p /mnt/sysimage${REPO_COURSE} /mnt/sysimage${REPO_ISO}  /mnt/sysimage/mnt/cdrom /mnt/sysimage/var/www/html/images/{centos,ubuntu,slides}
 ls -l /mnt/sysimage/var/www/html |tee -a /mnt/sysimage/root/ks-post.log
-cp -a /run/install/isodir/repositories/*  ${REPO_COURSE}
+cp -a /run/install/isodir/repositories/*  /mnt/sysimage${REPO_COURSE}
 
 echo "Copy RHEL DVD to local drive..." | tee /dev/tty8
-cp /run/install/isodir/centos/isos/* /mnt/sysimage/var/www/html/
-echo "/var/www/html/CentOS-7-x86_64-DVD-1908.iso /mnt/cdrom iso9660 loop,ro 0 0" >> /mnt/sysimage/etc/fstab
-mkdir /mnt/sysimage/var/lib/libvirt/images/devops
-cp -r /run/install/isodir/centos/images/ /run/install/isodir/ubuntu/vms/bionic-server-cloudimg-amd64.img /mnt/sysimage/var/lib/libvirt/images/devops
-xz --decompress /mnt/sysimage/var/lib/libvirt/images/devops/images/CentOS-7-x86_64-GenericCloud.qcow2.xz 
-#qemu-img resize /mnt/sysimage/var/lib/libvirt/images/devops/images/CentOS-7-x86_64-GenericCloud.qcow2 40G
+
+cp /run/install/isodir/centos/isos/* /mnt/sysimage/var/www/html/iso/
+echo "/var/www/html/iso/CentOS-7-x86_64-DVD-1908.iso /mnt/cdrom iso9660 loop,ro 0 0" >> /mnt/sysimage/etc/fstab
+
+cp /run/install/isodir/centos/images/CentOS* /mnt/sysimage/var/www/html/images/centos/
+cp /run/install/isodir/ubuntu/vms/*.gz /mnt/sysimage/var/lib/libvirt/images/
+chmod 755 -R /mnt/sysimage/var/lib/libvirt/images/
 cp /run/install/isodir/bsupport-* /mnt/sysimage/usr/bin/
 chmod a+x /mnt/sysimage/usr/bin/bsupport-*
-cp /run/install/isodir/slides/day* /mnt/sysimage/home/devops/Pictures/
+cp /run/install/isodir/slides/d* /mnt/sysimage/var/www/html/images/slides
 cp /run/install/isodir/bsupportvm* /mnt/sysimage/etc/bash_completion.d/
-chgrp qemu /mnt/sysimage/var/lib/libvirt/images/devops/ -R
-chmod g+w -R /var/lib/libvirt/images/devops/
-# Changing wallpapers per day
-# gsettings set org.gnome.desktop.background picture-uri "file:///tmp/dia1.jpg"
+
 %end
 
 

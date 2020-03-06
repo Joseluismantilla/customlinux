@@ -52,3 +52,21 @@ drwxrwxrwx. 4 root root   32 Feb 27 14:41 centos
 drwxr-xr-x. 4 root root   38 Feb 27 09:38 repositories
 drwxr-xr-x. 2 root root   22 Feb 28 20:12 slides
 drwxr-xr-x. 3 root root   17 Feb 28 20:26 ubuntu
+
+#----- partition
+parted /dev/sdb print
+parted /dev/sdb mklabel msdos
+parted /dev/sdb mkpart primary ext4 1M 100%
+mkfs.ext4 /dev/sdb1
+-----------------
+ fdisk /dev/sdb
+ primary partition complete and after flag to boot (a)
+
+dd conv=notrunc bs=440 count=1 if=/usr/share/syslinux/mbr.bin of=/dev/sdb
+mkfs.ext4 /dev/sdb1
+tune2fs -L DEVOPS /dev/sdb1
+extlinux --install /run/media/....
+STEP 4: Copy a Linux kernel image (like vmlinuz) to the root (/dev/sdX1) of your media.
+
+STEP 5: Lastly, create a 'syslinux.cfg' file in the root of your media (/dev/sdX1) and
+enter any configuration options you need/want. 
