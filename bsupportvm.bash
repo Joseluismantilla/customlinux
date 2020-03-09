@@ -16,26 +16,16 @@ _bsupportvm_completion()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
 if [[ $prev == "bsupport-devops-vm" ]]; then
-	base="jenkins kubernetes node registry list"
+	base="gitlab jenkins workstation registry list"
     COMPREPLY=( $(compgen -W "${base}" -- ${cur}) )
     return 0
 else
     case "${prev}" in
         jenkins)
-            opts="centos ubuntu"
+            opts="server node"
             COMPREPLY=( $(compgen -W "$opts" ${cur}) )
             return 0
         ;;
-        kubernetes)
-            opts="centos ubuntu"
-            COMPREPLY=( $(compgen -W "$opts" ${cur}) )
-            return 0
-        ;;
-        node)
-	    local running="jenkins kubernetes"
-            COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
-	    return 0
-	;;
         *)
         ;;
     esac

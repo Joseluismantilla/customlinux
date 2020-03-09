@@ -70,3 +70,19 @@ STEP 4: Copy a Linux kernel image (like vmlinuz) to the root (/dev/sdX1) of your
 
 STEP 5: Lastly, create a 'syslinux.cfg' file in the root of your media (/dev/sdX1) and
 enter any configuration options you need/want. 
+
+---Final version
+Creating BOOT ISO in first usb partition second partition
+
+/dev/sdb = USB Memory
+
+fdisk 
+Device     Boot   Start      End  Sectors  Size Id Type
+/dev/sdb1  *       2048  2099199  2097152    1G 83 Linux
+/dev/sdb2       2099200 61767679 59668480 28.5G 83 Linux
+
+dd if=/usr/share/syslinux/mbr.bin of=/dev/sdb
+isohybrid --partok file.iso
+dd if=/home/kiosk/Downloads/rhel-server-7.7-x86_64-boot.iso of=/dev/sdb1 bs=64M statur=progress
+
+mkisofs -o /tmp/devops8.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -V "CentOS 8 x86_64" -R -l -v  .

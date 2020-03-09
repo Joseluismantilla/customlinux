@@ -8,7 +8,36 @@ cdrom
 graphical
 # Run the Setup Agent on first boot
 firstboot --disable
-ignoredisk --only-use=vda
+%pre
+SRCDISK=$(blkid -t LABEL=DEVOPS | sed -e 's:^/dev/::' -e 's/[0-9].*//')
+CANDIDATES=$(lsblk -ido KNAME,TYPE | grep -w disk | cut -d" " -f1 | grep -Ev '^fd' | grep -Ev '^zram')
+for d in $CANDIDATES; do
+    #grep -q 1 /sys/block/$d/removable && continue
+    [[ "$d" == "$SRCDISK" ]] && continue
+    MAINDISK=$d
+    break
+done
+if [[ -z "${MAINDISK}" ]]; then
+    # Abort, abort
+    chvt 1
+    echo | tee /dev/tty1
+    echo -e "Could not find a disk to install to\r" | tee /dev/tty1
+    echo -n "Press <enter> to reboot..." > /dev/tty1
+    read text
+    reboot
+fi
+
+
+cat >> /tmp/ksconfig <<-EOF
+ignoredisk --only-use=$MAINDISK
+# System bootloader configuration
+bootloader --location=mbr --boot-drive=$MAINDISK 
+autopart --type=lvm
+# Partition clearing information
+clearpart --all --drives=$MAINDISK
+EOF
+%end
+
 # Keyboard layouts
 keyboard --vckeymap=latam --xlayouts='latam'
 # System language
@@ -23,15 +52,13 @@ rootpw --iscrypted $6$DOgftsTO3cx2cXGa$DLdKigAD6ikbm33xyRXQhXMe/JaR2rVJVp.vC3XK8
 # System services
 #services --disabled="chronyd"
 services --enabled=NetworkManager,sshd,httpd
-firewall --disabled 
+firewall --enabled 
 # System timezone
 timezone America/Bogota --isUtc --nontp
-user --name=devops --password=$6$eJagW2OYJWOK2xbw$WkWH/Mk6PwAA2wZTL5dS5FMHFeflEtJKYE9HfAk01PWGbd84FuoYACqNmTDADqQfviMqR0Zbye8XegD/Atmae0 --iscrypted --gecos="devops"
-# System bootloader configuration
-bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=vda
-autopart --type=lvm
-# Partition clearing information
-clearpart --all --initlabel
+user --name=devops --password=devops --plaintext --gecos="devops" --groups libvirt
+
+%include /tmp/ksconfig
+
 xconfig  --startxonboot --defaultdesktop=GNOME
 
 %post
@@ -135,12 +162,12 @@ cp /run/install/isodir/bsupportvm* /mnt/sysimage/etc/bash_completion.d/
 @gnome-desktop
 @x11
 @java-platform
-virt-install
-virt-manager
-virt-viewer
-virt-top
-qemu-img
-qemu-kvm
+@virtualization-client
+@virtualization-hypervisor
+@virtualization-platform
+@virtualization-tools
+mtools
+createrepo
 httpd
 firefox
 bind

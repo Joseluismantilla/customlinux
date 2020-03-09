@@ -1,0 +1,17 @@
+#Script for gitlab machine
+
+STARTED=$(docker ps | grep registry | awk '{ print $2 }')
+
+if [[ $1 == "start" && -z $STARTED ]]; then
+  echo "starting registry..."
+  docker run -d -p 5000:5000 --restart=always --name registry registry > /dev/null
+  echo "done"
+elif [[ $1 == "stop" ]]; then
+  docker stop registry > /dev/null 2>&1 && docker rm registry >/dev/null 2>&1
+  echo "The registry has been stopped"
+elif [[ -n STARTED && -n $1 ]]; then
+  echo "The registry container is running"
+else
+  echo "Please, select start or stop"
+  exit 1
+fi 
